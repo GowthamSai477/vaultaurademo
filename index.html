@@ -1484,13 +1484,12 @@ tbody tr:hover { background: var(--wash); }
   transition: opacity 0.25s var(--ease), visibility 0s;
 }
 .modal-card {
-  width: min(92vw, 400px); text-align: center;
+  width: min(94vw, 480px); text-align: center;
   background: var(--glass-bg);
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   border: 1px solid var(--glass-border); border-radius: 16px;
   box-shadow: var(--shadow-pop), var(--modal-shadow), inset 0 1px 0 var(--glass-inset);
-  padding: 42px 34px 34px;
-  transform: scale(0.96); opacity: 0;
+  padding: 48px 40px 38px;
   transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
 }
 .modal-overlay.open .modal-card { transform: scale(1); opacity: 1; }
@@ -1505,16 +1504,17 @@ tbody tr:hover { background: var(--wash); }
   border-radius: 50%; transition: color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .modal-close-x:hover { color: var(--text); background: var(--wash); }
-.notify-form { display: flex; gap: 8px; margin-top: 24px; }
+.notify-form { display: flex; flex-direction: column; gap: 10px; margin-top: 26px; }
+.notify-form[hidden] { display: none; }
+@media (min-width: 560px) { .notify-form { flex-direction: row; } }
 .notify-form input {
-  flex: 1; min-width: 0; font: inherit; font-size: 0.92rem; color: var(--text);
+  flex: 1; min-width: 0; font: inherit; font-size: 0.98rem; color: var(--text);
   background: var(--surface); border: 1px solid var(--border-3); border-radius: 999px;
-  padding: 10px 16px; outline: none; transition: border-color 0.2s var(--ease);
+  padding: 13px 20px; outline: none; transition: border-color 0.2s var(--ease);
 }
 .notify-form input:focus { border-color: var(--accent); }
-.notify-form .btn { flex: none; border-radius: 999px; padding: 10px 20px; font-size: 0.9rem; }
-.notify-done { margin-top: 24px; color: var(--good); font-weight: 500; }
-@media (max-width: 480px) { .notify-form { flex-direction: column; } }
+.notify-form .btn { flex: none; border-radius: 999px; padding: 13px 24px; font-size: 0.95rem; }
+.notify-done { margin-top: 26px; color: var(--good); font-weight: 500; }
 
 /* ═══ THEME FADE ═══ */
 body, .browser, .autofill, .ticker, .footer, .filter-demo, .fd-chip, .fd-node,
@@ -2355,7 +2355,7 @@ html[data-theme] .modal-card {
     <h3>Be first in line.</h3>
     <p>VaultAura is in its final building phase. Drop your email and we'll tell you the moment it launches — one email, no spam.</p>
     <form id="notifyForm" class="notify-form" novalidate>
-      <input type="email" id="notifyEmail" name="email" placeholder="you@example.com" autocomplete="email" required aria-label="Email address">
+      <input type="email" id="notifyEmail" name="email" placeholder="you@example.com" autocomplete="off" required aria-label="Email address">
       <button class="btn btn-solid" type="submit">Notify me at launch</button>
     </form>
     <p class="notify-done" id="notifyDone" hidden>You're on the list — see you at launch.</p>
@@ -2387,9 +2387,15 @@ html[data-theme] .modal-card {
   var dlTrigger = null;
   function openModal(el) {
     dlTrigger = el;
+    /* one state or the other, never both */
+    var joined = false;
+    try { joined = JSON.parse(localStorage.getItem('va-waitlist') || '[]').length > 0; } catch (e) {}
+    notifyForm.hidden = joined;
+    notifyDone.hidden = !joined;
+    notifyEmail.value = '';
     dlModal.classList.add('open');
     dlModal.setAttribute('aria-hidden', 'false');
-    notifyEmail.focus();
+    (joined ? dlClose : notifyEmail).focus();
   }
   function closeModal() {
     dlModal.classList.remove('open');
