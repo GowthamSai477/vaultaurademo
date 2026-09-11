@@ -54,7 +54,7 @@
     var cores = navigator.hardwareConcurrency || 4;
     var mem = navigator.deviceMemory || 8;
     var small = Math.min(window.innerWidth, window.innerHeight) < 520 || window.innerWidth < 700;
-    if (gl && cores >= 4 && mem >= 4 && !small) tier = (cores >= 8 && window.innerWidth >= 1100) ? 'high' : 'med';
+    if (gl && cores >= 4 && mem >= 4) tier = small ? 'mobile' : ((cores >= 8 && window.innerWidth >= 1100) ? 'high' : 'med');
   } catch (e) {}
   window.__VA_TIER__ = tier;
   window.__VA3D_CAP__ = tier !== 'low';
@@ -383,7 +383,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 }
 .theme-toggle {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; height: 36px; flex: none;
+  width: 44px; height: 44px; flex: none;
   border-radius: 9px; border: 1px solid var(--border);
   background: transparent; cursor: pointer; color: var(--text-dim);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background-color 0.25s ease;
@@ -411,7 +411,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .nav-links a:hover { color: var(--text); }
 .nav-cta { padding: 9px 20px; font-size: 0.9rem; }
 .nav-toggle {
-  display: none; width: 40px; height: 40px; position: relative;
+  display: none; width: 44px; height: 44px; position: relative;
   background: transparent; border: 0; cursor: pointer; z-index: 110;
   margin-left: auto;
 }
@@ -1498,9 +1498,8 @@ tbody tr:hover { background: var(--wash); }
 .modal-card h3 { font-size: 1.45rem; letter-spacing: -0.02em; }
 .modal-card p { margin-top: 14px; color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; }
 .modal-close-x {
-  position: absolute; top: 12px; right: 12px; width: 32px; height: 32px;
   display: inline-flex; align-items: center; justify-content: center;
-  border: 0; background: transparent; color: var(--text-dim); cursor: pointer;
+  position: absolute; top: 8px; right: 8px; width: 40px; height: 40px;
   border-radius: 50%; transition: color 0.2s var(--ease), background 0.2s var(--ease);
 }
 .modal-close-x:hover { color: var(--text); background: var(--wash); }
@@ -1668,7 +1667,12 @@ html[data-3d-pending] .pipe-track { visibility: hidden; }
   border-radius: 10px; background: var(--well-2); border: 1px solid var(--border);
 }
 [data-3d] .mini3d { display: block; }
-.mini3d[data-mini="globe"] { height: 180px; margin-top: 22px; }
+.mini3d[data-mini="globe"] {
+  display: block; height: 180px; margin-top: 22px;
+  /* no-WebGL fallback: soft glowing dot-sphere instead of an empty box */
+  background: radial-gradient(circle at 50% 44%,
+    rgba(34, 211, 238, 0.20), rgba(34, 211, 238, 0.06) 34%, transparent 60%);
+}
 @media (max-width: 640px) {
   .mini3d[data-mini="globe"] { height: 150px; }
 }
@@ -2792,7 +2796,7 @@ async function init() {
     const mount = document.querySelector('.bg3d');
     if (!mount) return;
     const st = makeStage(mount, { fov: 55, pos: [0, 0, 30], far: 100, aa: false });
-    const N = TIER === 'high' ? 2400 : 1400;
+    const N = TIER === 'high' ? 2400 : TIER === 'mobile' ? 600 : 1400;
     const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
     /* uniform thick spherical shell around the camera's resting point — a box
        distribution bunches stars toward its corners, so rotating it (or drifting the
