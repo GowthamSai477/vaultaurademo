@@ -11,7 +11,7 @@
 <meta property="og:site_name" content="VaultAura">
 <meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#0A0A0C">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3l10 4v7c0 6.5-4.2 11.6-10 14C10.2 25.6 6 20.5 6 14V7l10-4z' fill='none' stroke='%2322D3EE' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='2.4' fill='%2322D3EE'/%3E%3Cpath d='M16 15.4V20' stroke='%2322D3EE' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Sora:wght@600;700&display=swap" rel="stylesheet">
@@ -1647,7 +1647,7 @@ html[data-3d-pending] .pipe-track { visibility: hidden; }
   display: flex; align-items: center; gap: 8px; padding: 7px 10px;
   font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
   border: 1px solid var(--border-3); border-radius: 8px; background: var(--surface);
-  animation: phChip 8.8s linear infinite;
+  animation: phChip 8s linear infinite;
 }
 .ph-chip svg { flex: none; }
 .ph-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1655,44 +1655,50 @@ html[data-3d-pending] .pipe-track { visibility: hidden; }
   position: absolute; top: 8px; bottom: 8px; left: 0; width: 2px; border-radius: 2px;
   background: linear-gradient(180deg, transparent, var(--accent), transparent);
   filter: drop-shadow(0 0 6px var(--accent-glow-hot));
-  opacity: 0; animation: phScan 4.4s linear infinite;
+  opacity: 0; animation: phScan 8s linear infinite;
 }
 .pu { position: absolute; left: 30px; right: 10px; top: 50%; transform: translateY(-50%); }
-.pu-bad { animation: puBad 8.8s linear infinite; }
-.pu-ok { opacity: 0; animation: puOk 8.8s linear infinite; }
-@keyframes puBad { 0%, 10.9% { opacity: 0; } 11%, 60.9% { opacity: 1; } 61%, 100% { opacity: 0; } }
-@keyframes puOk { 0%, 10.9% { opacity: 1; } 11%, 60.9% { opacity: 0; } 61%, 100% { opacity: 1; } }
+.pu-bad { animation: puBad 8s linear infinite; }
+.pu-ok { opacity: 0; animation: puOk 8s linear infinite; }
+@keyframes puBad { 0%, 44.99% { opacity: 1; } 45%, 100% { opacity: 0; } }
+@keyframes puOk { 0%, 44.99% { opacity: 0; } 45%, 100% { opacity: 1; } }
 .ph-verdict {
   flex: none; display: inline-flex; align-items: center; gap: 5px;
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em;
   border-radius: 999px; padding: 4px 9px; opacity: 0;
 }
-.ph-safe { color: var(--good); border: 1px solid var(--good-border); background: var(--good-tint); animation: phSafe 8.8s var(--ease) infinite; }
-.ph-block { color: var(--dgr); border: 1px solid var(--dgr-border); background: var(--dgr-tint-2); animation: phBlock 8.8s var(--ease) infinite; }
+.ph-safe { color: var(--good); border: 1px solid var(--good-border); background: var(--good-tint); animation: phSafe 8s linear infinite; }
+.ph-block { color: var(--dgr); border: 1px solid var(--dgr-border); background: var(--dgr-tint-2); animation: phBlock 8s linear infinite; }
+/* One shared 8s timeline: bad URL -> sweep -> BLOCKED snap @25% -> hold -> URL swap
+   @45% -> sweep -> SAFE snap @75% -> hold -> loop. Sweep finish and verdict reveal
+   hit the same frame via duplicated stops. */
 @keyframes phScan {
   0%        { left: -2%; opacity: 0; }
-  4%        { left: 0%; opacity: 1; }
-  20%       { left: 100%; opacity: 1; }
-  24%, 100% { left: 100%; opacity: 0; }
+  5%        { left: 0%; opacity: 1; }
+  25%       { left: 100%; opacity: 1; }
+  26%       { left: 100%; opacity: 0; }
+  50%       { left: -2%; opacity: 0; }
+  55%       { left: 0%; opacity: 1; }
+  75%       { left: 100%; opacity: 1; }
+  76%       { left: 100%; opacity: 0; }
+  100%      { left: -2%; opacity: 0; }
 }
 @keyframes phChip {
-  0%, 10.9%  { border-color: var(--border-3); }
-  11%, 42%   { border-color: var(--dgr-border); }
-  48%, 60.9% { border-color: var(--border-3); }
-  61%, 90%   { border-color: var(--good-border); }
-  95%, 100%  { border-color: var(--border-3); }
+  0%, 24.99%  { border-color: var(--border-3); }
+  25%, 42%    { border-color: var(--dgr-border); }
+  45%, 74.99% { border-color: var(--border-3); }
+  75%, 95%    { border-color: var(--good-border); }
+  95.5%, 100% { border-color: var(--border-3); }
 }
-/* reveal beats at 11% and 61% — sweep lands (10%/60%), then URL + badge + chip color
-   snap together in the same frame */
 @keyframes phBlock {
-  0%, 10.9%  { opacity: 0; transform: translateY(4px); }
-  11%, 42%   { opacity: 1; transform: none; }
-  47%, 100%  { opacity: 0; transform: translateY(4px); }
+  0%, 24.99%  { opacity: 0; transform: translateY(4px); }
+  25%, 42%    { opacity: 1; transform: none; }
+  45%, 100%   { opacity: 0; transform: translateY(4px); }
 }
 @keyframes phSafe {
-  0%, 60.9%  { opacity: 0; transform: translateY(4px); }
-  61%, 90%   { opacity: 1; transform: none; }
-  95%, 100%  { opacity: 0; transform: translateY(4px); }
+  0%, 74.99%  { opacity: 0; transform: translateY(4px); }
+  75%, 92%    { opacity: 1; transform: none; }
+  95%, 100%   { opacity: 0; transform: translateY(4px); }
 }
 
 /* ═══ PERF — paint containment for bento/panel repaint isolation ═══ */
@@ -1749,7 +1755,7 @@ html[data-theme] .modal-card {
 <header class="navbar" id="navbar">
   <nav class="nav-inner" aria-label="Main navigation">
     <a href="#top" class="brand" aria-label="VaultAura — home">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l7.5 3v5.2c0 4.9-3.1 8.7-7.5 10.8-4.4-2.1-7.5-5.9-7.5-10.8V5.5l7.5-3z"/><circle cx="12" cy="9.5" r="1.7"/><path d="M12 11.2v3.3" stroke-linecap="round"/></svg>
+      <img src="assets/icon.webp" alt="" width="22" height="22" aria-hidden="true">
       <span>VaultAura</span>
     </a>
     <ul class="nav-links">
@@ -2272,7 +2278,7 @@ html[data-theme] .modal-card {
     <div class="cta-glow" aria-hidden="true"></div>
     <h2 class="cta-title">Take your passwords everywhere.</h2>
     <a href="#top" class="btn btn-solid btn-lg">Download VaultAura free</a>
-    <p class="cta-platforms">Windows · macOS · Linux · Android · iOS · Chrome · Firefox · Edge</p>
+    <p class="cta-platforms">Windows · macOS · Android · iOS · Chrome · Firefox · Edge</p>
   </div>
 </section>
 </main>
@@ -2281,7 +2287,7 @@ html[data-theme] .modal-card {
 <footer class="footer">
   <div class="container footer-inner">
     <a href="#top" class="brand" aria-label="VaultAura — home">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l7.5 3v5.2c0 4.9-3.1 8.7-7.5 10.8-4.4-2.1-7.5-5.9-7.5-10.8V5.5l7.5-3z"/><circle cx="12" cy="9.5" r="1.7"/><path d="M12 11.2v3.3" stroke-linecap="round"/></svg>
+      <img src="assets/icon.webp" alt="" width="20" height="20" aria-hidden="true">
       <span>VaultAura</span>
     </a>
     <nav class="footer-links" aria-label="Footer">
